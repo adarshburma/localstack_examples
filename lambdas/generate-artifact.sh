@@ -5,13 +5,14 @@ source $(pwd)/$1/bin/activate
 if [[ $? != 0 ]]; then
     exit 1;
 fi
-echo $VIRTUAL_ENV/lib/python3.5/site-packages
+export VIRTUAL_ENV=/Users/adarshburma/localstack_examples/lambdas/hello_world
+echo $VIRTUAL_ENV/lib/python3.6.4/site-packages
 rm $ZIPFILE
 cd $VIRTUAL_ENV
 zip $ZIPFILE *.py
 zip -ur $ZIPFILE models
 
-cd $VIRTUAL_ENV/lib/python3.5/site-packages/
+cd $VIRTUAL_ENV/lib/python3.6/site-packages/
 zip -ur $ZIPFILE .
 deactivate
 
@@ -23,7 +24,7 @@ cd $HOME_PATH
 
 awslocal lambda \
         create-function --function-name=$1 \
-        --runtime=python3.5 \
+        --runtime=python3.6.4 \
         --role=lambda_policy \
         --handler=app.lambda_handler \
         --zip-file fileb://lambda.zip
@@ -31,17 +32,20 @@ awslocal lambda \
 if [[ $? != 0 ]]; then
     echo "Lambda already exists...delete and create again"
     
-    # awslocal lambda delete-function --function-name=$1
-    # awslocal lambda \
-    #     create-function --function-name=$1 \
-    #     --runtime=python3.5 \
-    #     --role=lambda_policy \
-    #     --handler=app.lambda_handler \
-    #     --zip-file fileb://lambda.zip
+    awslocal lambda delete-function --function-name=$1
+    awslocal lambda \
+        create-function --function-name=$1 \
+        --runtime=python3.6.4 \
+        --role=lambda_policy \
+        --handler=app.lambda_handler \
+        --zip-file fileb://lambda.zip
     echo "Update lambda code only"
     awslocal lambda \
         update-function-code --function-name=$1 \
         --zip-file fileb://lambda.zip
 fi
 
-
+awslocal lambda invoke \
+            --invocation-type Events \
+            --function-name $1 \
+            outputfile.txt

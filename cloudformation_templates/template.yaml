@@ -24,6 +24,7 @@ Resources:
           Fn::GetAtt: [MyQueue2,Arn]
           Protocol: sqs
       TopicName: SampleTopic
+  
 
 
 # AWSTemplateFormatVersion: '2010-09-09'

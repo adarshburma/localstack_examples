@@ -1,0 +1,7 @@
+{
+  "body": "created sns topic", 
+  "headers": {
+    "Content-Type": "application/json"
+  }, 
+  "statusCode": 200
+}
